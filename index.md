@@ -107,19 +107,19 @@ Please rate the samples based on similarity for each metric. When you are ready,
   </thead>
   <tbody>
     <tr>
-      <td>11</td>
+      <td>Audio 1</td>
       <td><audio src="Audio/11_orig.wav" controls style="width: 200px"></audio></td>
       <td><audio src="Audio/11_ref.wav" controls style="width: 200px"></audio></td>
       <td><audio src="Audio/11_recon_abl.wav" controls style="width: 200px"></audio></td>
     </tr>
     <tr>
-      <td>15</td>
+      <td>Audio 2</td>
       <td><audio src="Audio/15_orig.wav" controls style="width: 200px"></audio></td>
       <td><audio src="Audio/15_ref.wav" controls style="width: 200px"></audio></td>
       <td><audio src="Audio/15_recon_abl.wav" controls style="width: 200px"></audio></td>
     </tr>
     <tr>
-      <td>16</td>
+      <td>Audio 3</td>
       <td><audio src="Audio/16_orig.wav" controls style="width: 200px"></audio></td>
       <td><audio src="Audio/16_ref.wav" controls style="width: 200px"></audio></td>
       <td><audio src="Audio/16_recon_abl.wav" controls style="width: 200px"></audio></td>
@@ -127,3 +127,9 @@ Please rate the samples based on similarity for each metric. When you are ready,
   </tbody>
 </table>
 
+## 請回答給我
+| Sample | TimbreMOS (1-5) | ADSRMOS (1-5) | ContentMOS (1-5) |
+| --- | --- | --- | --- |
+| Audio 1 | | | |
+| Audio 2 | | | |
+| Audio 3 | | | |
