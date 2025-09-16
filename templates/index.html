@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Evaluation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            color: #555;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        .instructions {
+            background-color: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        
+        .audio-section {
+            margin: 30px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        audio {
+            width: 100%;
+            max-width: 200px;
+            height: 40px;
+        }
+        
+        .rating-section {
+            background-color: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .rating-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .rating-table th {
+            background-color: #ffc107;
+            color: #333;
+        }
+        
+        .rating-table td {
+            padding: 10px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .submit-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .submit-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Audio Evaluation Test</h1>
+        
+        <div class="instructions">
+            <h2>聆聽測試說明 / Listening Test Instructions</h2>
+            <p>感謝您參與我們的合成器 Preset 轉換評估研究。請務必先閱讀此頁內容，再進行測驗，以確保結果的公平與有效性。接下來你將聽到3組音檔，整體測驗時常大約1分鐘。</p>
+            <p><strong>Thank you for participating in our study on synthesizer preset conversion. Please read this page carefully before starting the test to ensure fairness and validity. You will be presented with three sets of audio files, with each set containing results from different models. The overall test duration is approximately one minute.</strong></p>
+        </div>
+
+        <div class="instructions">
+            <h2>測試主題 / Test Theme</h2>
+            <p>在此測試中，我們希望了解模型是否能正確地將一段 Original Audio（原始演奏內容）轉換成具有 Reference Audio（參考音檔）的音色 (Timbre) 與 ADSR (Attack, Decay, Sustain, Release)。</p>
+            <p><strong>In this test, we evaluate whether models can take the Original Audio (note content) and convert it into the Timbre and ADSR envelope of the Reference Audio.</strong></p>
+            
+            <p><strong>每個生成結果都應該：</strong></p>
+            <ul>
+                <li><strong>保留 Original Audio 的演奏內容（彈什麼音）</strong></li>
+                <li><strong>轉換出 Reference Audio 的 Timbre 與 ADSR</strong></li>
+            </ul>
+            
+            <p><strong>Each generated result should:</strong></p>
+            <ul>
+                <li><strong>Preserve the musical content of the Original Audio (what notes are played)</strong></li>
+                <li><strong>Transform into the Timbre and ADSR of the Reference Audio</strong></li>
+            </ul>
+        </div>
+
+        <div class="instructions">
+            <h2>評估指標 / Evaluation Metrics</h2>
+            
+            <h3>音色相似度 (Timbre Similarity)</h3>
+            <ul>
+                <li><strong>定義</strong>：聲音的「質感」，例如明亮或暗沉、厚實或輕薄、金屬感或柔和感</li>
+                <li><strong>重點</strong>：聆聽聲音本身的「材料感」與頻譜特性，不考慮長短或變化</li>
+                <li><strong>評分</strong>：越接近參考音色，分數越高</li>
+            </ul>
+            
+            <h3>ADSR Envelope 相似度 (ADSR Similarity)</h3>
+            <ul>
+                <li><strong>定義</strong>：聲音隨時間的「形狀」，包含起音 (Attack)、衰減 (Decay)、延音 (Sustain)、收尾 (Release)</li>
+                <li><strong>重點</strong>：專注於聲音的動態變化，例如一開始是否快速衝出、尾音是否緩慢消退</li>
+                <li><strong>評分</strong>：時間變化模式越接近參考，分數越高</li>
+            </ul>
+            
+            <h3>內容相似度 (Content Similarity)</h3>
+            <ul>
+                <li><strong>定義</strong>：評估生成音檔是否保留了原始音檔的演奏內容，例如音符、節奏、旋律等</li>
+                <li><strong>重點</strong>：專注於內容的保留程度，是否彈奏的音、內容與原始音檔相似</li>
+                <li><strong>評分</strong>：越接近原始內容，分數越高</li>
+            </ul>
+        </div>
+
+        <div class="instructions">
+            <h2>測試流程 / Test Procedure</h2>
+            <ol>
+                <li>Listen to Original Audio（決定演奏內容）</li>
+                <li>Listen to Reference Audio（提供 Timbre 與 ADSR 資訊）</li>
+                <li>Listen to Generated Audio, and rate from 1 to 5：</li>
+                <ul>
+                    <li><strong>1</strong>：完全不相似 / Not similar at all</li>
+                    <li><strong>2</strong>：稍微相似 / Slightly similar</li>
+                    <li><strong>3</strong>：中等相似 / Moderately similar</li>
+                    <li><strong>4</strong>：接近 / Close</li>
+                    <li><strong>5</strong>：非常相似 / Very similar</li>
+                </ul>
+            </ol>
+        </div>
+
+        <div class="audio-section">
+            <h2>Audio Files Table</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">Sample</th>
+                        <th>Original</th>
+                        <th>Reference</th>
+                        <th>Reconstructed (Ablated)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Audio 1</strong></td>
+                        <td><audio src="/Audio/11_orig.wav" controls></audio></td>
+                        <td><audio src="/Audio/11_ref.wav" controls></audio></td>
+                        <td><audio src="/Audio/11_recon_abl.wav" controls></audio></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Audio 2</strong></td>
+                        <td><audio src="/Audio/15_orig.wav" controls></audio></td>
+                        <td><audio src="/Audio/15_ref.wav" controls></audio></td>
+                        <td><audio src="/Audio/15_recon_abl.wav" controls></audio></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Audio 3</strong></td>
+                        <td><audio src="/Audio/16_orig.wav" controls></audio></td>
+                        <td><audio src="/Audio/16_ref.wav" controls></audio></td>
+                        <td><audio src="/Audio/16_recon_abl.wav" controls></audio></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="rating-section">
+            <h2>請回答給我 / Please Rate the Samples</h2>
+            <p>請根據以下三個指標對每個音檔進行評分 (1-5分)：</p>
+            <p><strong>Please rate each audio sample based on the following three metrics (1-5 points):</strong></p>
+            
+            <table class="rating-table">
+                <thead>
+                    <tr>
+                        <th style="width: 150px;">Sample</th>
+                        <th>TimbreMOS (1-5)</th>
+                        <th>ADSRMOS (1-5)</th>
+                        <th>ContentMOS (1-5)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Audio 1</strong></td>
+                        <td>
+                            <select name="audio1_timbre" required>
+                                <option value="">請選擇</option>
+                                <option value="1">1 - 完全不相似</option>
+                                <option value="2">2 - 稍微相似</option>
+                                <option value="3">3 - 中等相似</option>
+                                <option value="4">4 - 接近</option>
+                                <option value="5">5 - 非常相似</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="audio1_adsr" required>
+                                <option value="">請選擇</option>
+                                <option value="1">1 - 完全不相似</option>
+                                <option value="2">2 - 稍微相似</option>
+                                <option value="3">3 - 中等相似</option>
+                                <option value="4">4 - 接近</option>
+                                <option value="5">5 - 非常相似</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="audio1_content" required>
+                                <option value="">請選擇</option>
+                                <option value="1">1 - 完全不相似</option>
+                                <option value="2">2 - 稍微相似</option>
+                                <option value="3">3 - 中等相似</option>
+                                <option value="4">4 - 接近</option>
+                                <option value="5">5 - 非常相似</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Audio 2</strong></td>
+                        <td>
+                            <select name="audio2_timbre" required>
+                                <option value="">請選擇</option>
+                                <option value="1">1 - 完全不相似</option>
+                                <option value="2">2 - 稍微相似</option>
+                                <option value="3">3 - 中等相似</option>
+                                <option value="4">4 - 接近</option>
+                                <option value="5">5 - 非常相似</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="audio2_adsr" required>
+                                <option value="">請選擇</option>
+                                <option value="1">1 - 完全不相似</option>
+                                <option value="2">2 - 稍微相似</option>
+                                <option value="3">3 - 中等相似</option>
+                                <option value="4">4 - 接近</option>
+                                <option value="5">5 - 非常相似</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="audio2_content" required>
+                                <option value="">請選擇</option>
+                                <option value="1">1 - 完全不相似</option>
+                                <option value="2">2 - 稍微相似</option>
+                                <option value="3">3 - 中等相似</option>
+                                <option value="4">4 - 接近</option>
+                                <option value="5">5 - 非常相似</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Audio 3</strong></td>
+                        <td>
+                            <select name="audio3_timbre" required>
+                                <option value="">請選擇</option>
+                                <option value="1">1 - 完全不相似</option>
+                                <option value="2">2 - 稍微相似</option>
+                                <option value="3">3 - 中等相似</option>
+                                <option value="4">4 - 接近</option>
+                                <option value="5">5 - 非常相似</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="audio3_adsr" required>
+                                <option value="">請選擇</option>
+                                <option value="1">1 - 完全不相似</option>
+                                <option value="2">2 - 稍微相似</option>
+                                <option value="3">3 - 中等相似</option>
+                                <option value="4">4 - 接近</option>
+                                <option value="5">5 - 非常相似</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="audio3_content" required>
+                                <option value="">請選擇</option>
+                                <option value="1">1 - 完全不相似</option>
+                                <option value="2">2 - 稍微相似</option>
+                                <option value="3">3 - 中等相似</option>
+                                <option value="4">4 - 接近</option>
+                                <option value="5">5 - 非常相似</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="submit-section">
+            <button class="submit-btn" onclick="submitResults()">提交結果 / Submit Results</button>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            結果已成功提交！感謝您的參與。
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            提交失敗，請檢查所有欄位是否已填寫。
+        </div>
+    </div>
+
+    <script>
+        function submitResults() {
+            // 收集所有評分數據
+            const formData = {
+                timestamp: new Date().toISOString(),
+                results: []
+            };
+
+            // 檢查是否所有欄位都已填寫
+            let allFilled = true;
+            
+            for (let i = 1; i <= 3; i++) {
+                const timbre = document.querySelector(`select[name="audio${i}_timbre"]`).value;
+                const adsr = document.querySelector(`select[name="audio${i}_adsr"]`).value;
+                const content = document.querySelector(`select[name="audio${i}_content"]`).value;
+                
+                if (!timbre || !adsr || !content) {
+                    allFilled = false;
+                    break;
+                }
+                
+                formData.results.push({
+                    sample: `Audio ${i}`,
+                    timbre: parseInt(timbre),
+                    adsr: parseInt(adsr),
+                    content: parseInt(content)
+                });
+            }
+
+            if (!allFilled) {
+                showError();
+                return;
+            }
+
+            // 提交數據
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showSuccess();
+                    // 禁用提交按鈕
+                    document.querySelector('.submit-btn').disabled = true;
+                } else {
+                    showError();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError();
+            });
+        }
+
+        function showSuccess() {
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function showError() {
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

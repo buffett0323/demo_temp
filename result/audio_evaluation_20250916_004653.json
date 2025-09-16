@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-09-16T04:46:53.955Z",
+  "results": [
+    {
+      "sample": "Audio 1",
+      "timbre": 4,
+      "adsr": 2,
+      "content": 4
+    },
+    {
+      "sample": "Audio 2",
+      "timbre": 3,
+      "adsr": 2,
+      "content": 4
+    },
+    {
+      "sample": "Audio 3",
+      "timbre": 4,
+      "adsr": 2,
+      "content": 3
+    }
+  ]
+}
